@@ -1,0 +1,56 @@
+{
+  "name": "@shkumbinhsn/fetcher",
+  "version": "0.1.0-alpha.2",
+  "description": "Type-safe fetch wrapper with Standard Schema validation and error handling",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "fetch",
+    "api",
+    "standard-schema",
+    "typescript",
+    "validation",
+    "error-handling"
+  ],
+  "author": "Shkumbin Hasani",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shkumbinhsn/fetcher"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0-beta.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "valibot": "^0.25.0",
+    "zod": "^3.22.0",
+    "jsdom": "^23.0.0"
+  }
+}
