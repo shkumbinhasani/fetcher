@@ -1,4 +1,7 @@
+![Dog fetching a cube](https://i.imgur.com/YdzHSK9.jpeg)
 # @shkumbinhsn/fetcher
+[![npm version](https://img.shields.io/npm/v/@shkumbinhsn/fetcher.svg)](https://www.npmjs.com/package/@shkumbinhsn/fetcher)
+[![npm downloads](https://img.shields.io/npm/dm/@shkumbinhsn/fetcher.svg)](https://www.npmjs.com/package/@shkumbinhsn/fetcher)
 
 Type-safe fetch wrapper with Standard Schema validation and error handling.
 
