@@ -88,6 +88,10 @@ async function parseResponse<T extends StandardSchemaV1 | undefined>(
   response: Response,
   schema?: T
 ): Promise<InferResponse<T>> {
+  if (response.status === 204 || response.headers.get('content-length') === '0') {
+    return null as InferResponse<T>;
+  }
+  
   const data = await response.json();
   
   if (!schema) {

@@ -167,4 +167,25 @@ describe('fetcher', () => {
     expect('schema' in (init || {})).toBe(false);
     expect('errors' in (init || {})).toBe(false);
   });
+
+  it('should handle 204 No Content response', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(null, { status: 204 })
+    );
+
+    const result = await fetcher('/api/users/123', { method: 'DELETE' });
+    expect(result).toBeNull();
+  });
+
+  it('should handle empty response with content-length 0', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response('', { 
+        status: 200,
+        headers: { 'content-length': '0' }
+      })
+    );
+
+    const result = await fetcher('/api/ping');
+    expect(result).toBeNull();
+  });
 });
