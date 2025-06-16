@@ -3,3 +3,7 @@ compatibility_date = "2025-06-16"
 
 [assets]
 directory = "./dist"
+
+[[routes]]
+pattern = "fetcher.shkumbinhsn.com/*"
+zone_name = "shkumbinhsn.com"
