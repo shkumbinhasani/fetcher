@@ -1,0 +1,55 @@
+/* Custom styles for the documentation site */
+
+/* Ensure logo adapts to theme colors */
+.site-title svg {
+  color: var(--sl-color-text);
+}
+
+/* Light theme logo color */
+:root {
+  --logo-color: #1a202c;
+}
+
+/* Dark theme logo color */
+:root[data-theme="dark"] {
+  --logo-color: #ffffff;
+}
+
+/* Apply color to logo */
+.site-title svg path {
+  fill: var(--logo-color);
+}
+
+/* Ensure proper logo sizing in header */
+.site-title {
+  display: flex;
+  align-items: center;
+}
+
+.site-title svg {
+  height: 22px;
+  width: auto;
+}
+
+/* Dark mode customization - make it more black */
+:root[data-theme="dark"] {
+  /* Main background - pure black */
+  --sl-color-bg: #000000;
+  --sl-color-bg-nav: #000000;
+  --sl-color-bg-sidebar: #000000;
+  
+  /* Slightly lighter black for cards and content areas */
+  --sl-color-bg-inline-code: #111111;
+  --sl-color-bg-accent: #111111;
+  
+  /* Border colors - very dark gray */
+  --sl-color-hairline: #222222;
+  --sl-color-hairline-shade: #333333;
+  
+  /* Text colors - keep high contrast */
+  --sl-color-text: #ffffff;
+  --sl-color-text-accent: #ffffff;
+  
+  /* Code block background */
+  --sl-color-code-bg: #111111;
+}

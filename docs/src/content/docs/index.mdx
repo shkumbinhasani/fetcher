@@ -1,0 +1,62 @@
+---
+title: '@shkumbinhsn/fetcher'
+description: Type-safe fetch wrapper with Standard Schema validation and error handling
+template: splash
+hero:
+  tagline: Type-safe fetch wrapper with validation and error handling for modern TypeScript applications
+  image:
+    file: ../../assets/img.png
+  actions:
+    - text: Get Started
+      link: /installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/shkumbinhasani/fetcher
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Features
+
+<CardGrid stagger>
+	<Card title="🔒 Type Safety" icon="laptop">
+		Full TypeScript support with type inference for requests and responses
+	</Card>
+	<Card title="✅ Schema Validation" icon="approve-check">
+		Response validation using any Standard Schema compatible library (Zod, Valibot, etc.)
+	</Card>
+	<Card title="🎯 Error Handling" icon="warning">
+		Structured error handling with typed error responses and custom error classes
+	</Card>
+	<Card title="🚀 Familiar API" icon="rocket">
+		Extended RequestInit interface - works exactly like fetch with extra features
+	</Card>
+	<Card title="📦 Tiny Bundle" icon="document">
+		Minimal dependencies and tiny bundle size for optimal performance
+	</Card>
+	<Card title="🔧 Framework Agnostic" icon="setting">
+		Works with any JavaScript framework or vanilla TypeScript/JavaScript
+	</Card>
+</CardGrid>
+
+## Quick Example
+
+```typescript
+import { fetcher } from '@shkumbinhsn/fetcher';
+import { z } from 'zod';
+
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email()
+});
+
+// Fully typed response
+const user = await fetcher('/api/users/123', {
+  schema: UserSchema
+});
+
+console.log(user.name); // TypeScript knows this is a string
+```
