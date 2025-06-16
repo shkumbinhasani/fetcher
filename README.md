@@ -1,4 +1,4 @@
-![Dog fetching a ball](./docs/src/assets/img.png)
+<img src="./docs/src/assets/img.png" alt="Dog fetching a ball" width="200" />
 # @shkumbinhsn/fetcher
 [![npm version](https://img.shields.io/npm/v/@shkumbinhsn/fetcher.svg)](https://www.npmjs.com/package/@shkumbinhsn/fetcher)
 [![npm downloads](https://img.shields.io/npm/dm/@shkumbinhsn/fetcher.svg)](https://www.npmjs.com/package/@shkumbinhsn/fetcher)
