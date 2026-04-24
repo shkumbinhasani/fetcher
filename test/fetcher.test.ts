@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { z } from 'zod';
-import { fetcher, defineError, ApiError, SchemaValidationError } from '../src';
+import { fetcher, defineError, ApiError, RequestFailedError, SchemaValidationError } from '../src';
 
 const mockFetch = vi.mocked(fetch);
 
@@ -105,7 +105,7 @@ describe('fetcher', () => {
   it('should handle non-matching error status codes', async () => {
     const errorSchema = z.object({ message: z.string() });
     const CustomError = defineError(400, errorSchema);
-    
+
     mockFetch.mockResolvedValueOnce(
       new Response('Server Error', { status: 500 })
     );
@@ -113,6 +113,40 @@ describe('fetcher', () => {
     await expect(
       fetcher('/api/users', { errors: [CustomError] })
     ).rejects.toThrow('Request failed: 500');
+  });
+
+  it('should not double-wrap "Request failed:" when status has no registered error', async () => {
+    const errorSchema = z.object({ message: z.string() });
+    const CustomError = defineError(401, errorSchema);
+
+    mockFetch.mockResolvedValueOnce(
+      new Response('Forbidden', { status: 403, statusText: 'Forbidden' })
+    );
+
+    try {
+      await fetcher('/api/users', { errors: [CustomError] });
+      throw new Error('should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(RequestFailedError);
+      expect((error as Error).message).toBe('Request failed: 403 Forbidden');
+      expect((error as Error).message).not.toMatch(/Request failed: Request failed:/);
+      expect((error as RequestFailedError).status).toBe(403);
+    }
+  });
+
+  it('should not double-wrap "Request failed:" when no errors are registered', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response('Server Error', { status: 500, statusText: 'Internal Server Error' })
+    );
+
+    try {
+      await fetcher('/api/users');
+      throw new Error('should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(RequestFailedError);
+      expect((error as Error).message).toBe('Request failed: 500 Internal Server Error');
+      expect((error as Error).message).not.toMatch(/Request failed: Request failed:/);
+    }
   });
 
   it('should handle fetch errors', async () => {
