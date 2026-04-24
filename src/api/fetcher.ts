@@ -1,5 +1,5 @@
 import { StandardSchemaV1 } from "@standard-schema/spec";
-import { ApiError, ApiErrorStatic } from "../errors/base";
+import { ApiError, ApiErrorStatic, RequestFailedError } from "../errors/base";
 import { FetcherRequestInit, InferResponse } from "./types";
 import { validateSchema, SchemaValidationError } from "./validation";
 
@@ -28,14 +28,17 @@ export async function fetcher<TResponse extends StandardSchemaV1 | undefined = u
   } catch (error) {
     // Re-throw API errors as-is
     if (error instanceof ApiError) throw error;
-    
+
+    // Pass through errors already produced by this library
+    if (error instanceof RequestFailedError) throw error;
+
     // Handle validation errors
     if (error instanceof SchemaValidationError) {
       throw new Error(`Response validation failed: ${error.message}`);
     }
-    
+
     // Handle other errors
-    throw new Error(
+    throw new RequestFailedError(
       `Request failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
@@ -47,13 +50,23 @@ async function handleErrorResponse(
 ): Promise<never> {
   // Default error if no custom errors provided
   if (!errorTypes?.length) {
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    throw new RequestFailedError(
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      response.statusText,
+      response
+    );
   }
 
   // Find matching error types for this status code
   const matchingErrors = errorTypes.filter(E => E.statusCode === response.status);
   if (!matchingErrors.length) {
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    throw new RequestFailedError(
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      response.statusText,
+      response
+    );
   }
 
   // Try to parse response body
@@ -61,7 +74,12 @@ async function handleErrorResponse(
   try {
     responseData = await response.json();
   } catch {
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    throw new RequestFailedError(
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      response.statusText,
+      response
+    );
   }
 
   // Try each matching error schema
@@ -79,8 +97,11 @@ async function handleErrorResponse(
   }
 
   // No schema matched
-  throw new Error(
-    `Request failed: ${response.status} ${response.statusText} - No matching error schema`
+  throw new RequestFailedError(
+    `Request failed: ${response.status} ${response.statusText} - No matching error schema`,
+    response.status,
+    response.statusText,
+    response
   );
 }
 

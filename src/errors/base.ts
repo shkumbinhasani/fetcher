@@ -2,7 +2,7 @@ import { StandardSchemaV1 } from "@standard-schema/spec";
 
 export abstract class ApiError<T = unknown> extends Error {
   abstract readonly statusCode: number;
-  
+
   constructor(
     message: string,
     public readonly data: T,
@@ -10,6 +10,18 @@ export abstract class ApiError<T = unknown> extends Error {
   ) {
     super(message);
     this.name = this.constructor.name;
+  }
+}
+
+export class RequestFailedError extends Error {
+  constructor(
+    message: string,
+    public readonly status?: number,
+    public readonly statusText?: string,
+    public readonly response?: Response
+  ) {
+    super(message);
+    this.name = 'RequestFailedError';
   }
 }
 
