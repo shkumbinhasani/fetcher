@@ -61,6 +61,7 @@ All standard `fetch()` options are supported:
 
 - `schema?: TResponse` - Response validation schema
 - `errors?: ApiErrorStatic<any>[]` - Custom error classes for error handling
+- `timeout?: number` - Milliseconds to wait for the whole request, body included. When it passes, the request is aborted and `RequestTimeoutError` (a `RequestFailedError`) is thrown. A `signal` you pass still aborts the request as usual.
 
 ## Return Value
 

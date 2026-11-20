@@ -1,5 +1,5 @@
 import { StandardSchemaV1 } from "@standard-schema/spec";
-import { ApiError, ApiErrorStatic, RequestFailedError } from "../errors/base";
+import { ApiError, ApiErrorStatic, RequestFailedError, RequestTimeoutError } from "../errors/base";
 import { FetcherRequestInit, InferResponse } from "./types";
 import { validateSchema, SchemaValidationError } from "./validation";
 
@@ -10,9 +10,27 @@ export async function fetcher<TResponse extends StandardSchemaV1 | undefined = u
   input: RequestInfo | URL,
   init?: FetcherRequestInit<TResponse>
 ): Promise<InferResponse<TResponse>> {
+  const { timeout, ...rest } = init || {};
+  if (timeout === undefined) return request(input, rest);
+
+  const deadline = withDeadline(timeout, rest.signal);
+  try {
+    return await request(input, { ...rest, signal: deadline.signal });
+  } catch (error) {
+    if (deadline.timedOut()) throw new RequestTimeoutError(timeout);
+    throw error;
+  } finally {
+    deadline.clear();
+  }
+}
+
+async function request<TResponse extends StandardSchemaV1 | undefined>(
+  input: RequestInfo | URL,
+  init: FetcherRequestInit<TResponse>
+): Promise<InferResponse<TResponse>> {
   try {
     // Extract our custom properties
-    const { schema, errors, ...requestInit } = init || {};
+    const { schema, errors, ...requestInit } = init;
     
     // Make request
     const response = await fetch(input, requestInit);
@@ -131,4 +149,29 @@ async function parseResponse<T extends StandardSchemaV1 | undefined>(
     }
     throw error;
   }
+}
+
+/**
+ * An AbortSignal that aborts after `timeout` ms or when `caller` aborts,
+ * whichever comes first. Built by hand because AbortSignal.any is missing
+ * from Safari before 17.4 and from React Native.
+ */
+function withDeadline(timeout: number, caller?: AbortSignal | null) {
+  const controller = new AbortController();
+  let timedOut = false;
+  const onCallerAbort = () => controller.abort(caller?.reason);
+  if (caller?.aborted) onCallerAbort();
+  else caller?.addEventListener('abort', onCallerAbort, { once: true });
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeout);
+  return {
+    signal: controller.signal,
+    timedOut: () => timedOut,
+    clear: () => {
+      clearTimeout(timer);
+      caller?.removeEventListener('abort', onCallerAbort);
+    },
+  };
 }

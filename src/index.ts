@@ -2,7 +2,7 @@
 export { fetcher } from './api/fetcher';
 
 // Error exports
-export { ApiError, RequestFailedError } from './errors/base';
+export { ApiError, RequestFailedError, RequestTimeoutError } from './errors/base';
 export { defineError } from './errors/factory';
 
 // Type exports
