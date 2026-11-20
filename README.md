@@ -114,6 +114,24 @@ try {
 }
 ```
 
+## Timeouts
+
+`fetch` waits forever by default. Pass `timeout` to give up after a set time:
+
+```typescript
+import { fetcher, RequestTimeoutError } from '@shkumbinhsn/fetcher';
+
+try {
+  await fetcher('/api/report', { timeout: 15_000 });
+} catch (error) {
+  if (error instanceof RequestTimeoutError) {
+    console.log(`No answer within ${error.timeout} ms`);
+  }
+}
+```
+
+`RequestTimeoutError` extends `RequestFailedError`, so code that already handles failed requests keeps working. Aborting your own `signal` still throws `RequestFailedError`, never `RequestTimeoutError`, so you can tell the two apart.
+
 ## With React Query
 
 ```typescript
@@ -172,6 +190,7 @@ function fetcher<TResponse extends StandardSchemaV1 | undefined = undefined>(
 The main fetch wrapper function that extends the standard `fetch` API with:
 - `schema?: TResponse` - Optional response validation schema
 - `errors?: ApiErrorStatic<any>[]` - Optional custom error types
+- `timeout?: number` - Optional limit in milliseconds for the whole request, body included. When it passes, the request is aborted and `RequestTimeoutError` is thrown. Your own `signal` still works alongside it.
 
 ### `defineError(statusCode, schema, name?)`
 
@@ -187,7 +206,7 @@ Create typed error classes for API responses.
 
 ### `FetcherRequestInit<T>`
 
-Extended `RequestInit` interface that includes `schema` and `errors` properties.
+Extended `RequestInit` interface that includes `schema`, `errors` and `timeout` properties.
 
 ## Supported Schema Libraries
 

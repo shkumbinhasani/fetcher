@@ -25,6 +25,13 @@ export class RequestFailedError extends Error {
   }
 }
 
+export class RequestTimeoutError extends RequestFailedError {
+  constructor(public readonly timeout: number) {
+    super(`Request timed out after ${timeout} ms`);
+    this.name = 'RequestTimeoutError';
+  }
+}
+
 export interface ApiErrorStatic<TSchema extends StandardSchemaV1> {
   new (
     message: string, 

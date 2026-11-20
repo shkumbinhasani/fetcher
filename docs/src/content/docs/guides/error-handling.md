@@ -269,6 +269,24 @@ try {
 }
 ```
 
+## Timeouts
+
+Set `timeout` to stop waiting for a request that never answers:
+
+```typescript
+import { RequestTimeoutError } from '@shkumbinhsn/fetcher';
+
+try {
+  await fetcher('/api/users', { timeout: 15_000 });
+} catch (error) {
+  if (error instanceof RequestTimeoutError) {
+    // error.timeout === 15000
+  }
+}
+```
+
+`RequestTimeoutError` extends `RequestFailedError`. Aborting your own `signal` throws a plain `RequestFailedError`, so a timeout and a cancel never look the same.
+
 ## Error Logging
 
 Add comprehensive error logging:
